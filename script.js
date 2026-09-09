@@ -4,7 +4,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatHistory = document.getElementById('chat-history');
     const typingIndicator = document.getElementById('typing-indicator');
 
-    const API_ENDPOINT = 'http://localhost:5000/api/chat';
+    // Aapka naya Replit API endpoint
+    const API_ENDPOINT = 'https://6122bce7-18de-4f2e-ab34-92f2081b32e6-00-c54akmfi8y9p.sisko.replit.dev/api/chat';
 
     // Handle form submission
     chatForm.addEventListener('submit', async (e) => {
@@ -12,24 +13,27 @@ document.addEventListener('DOMContentLoaded', () => {
         const messageText = userInput.value.trim();
         if (!messageText) return;
 
-        // 1. Append User Message immediately
+        // 1. User Message UI par turant dikhayein
         appendMessage(messageText, 'user');
         userInput.value = '';
-        
-        // Auto-scroll to bottom
         scrollToBottom();
 
-        // 3. Show loading/typing indicator
+        // 2. Typing indicator show karein
         showTypingIndicator();
 
+        // 3. AI function ko call karein
+        await sendMessageToAI(messageText);
+    });
+
+    // Aapka custom async function updated logic ke sath
+    async function sendMessageToAI(userMessage) {
         try {
-            // 2. Make async POST request using fetch()
             const response = await fetch(API_ENDPOINT, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ message: messageText })
+                body: JSON.stringify({ message: userMessage })
             });
 
             if (!response.ok) {
@@ -37,22 +41,29 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const data = await response.json();
-
-            // 4. Hide typing indicator & parse/append AI response
+            
+            // Typing indicator chupayein
             hideTypingIndicator();
-            appendAiResponse(data);
+
+            // Agar backend se advanced data (SQL/Tables) aa raha ho toh use karein,
+            // warna aapke `data.reply` ko display karein.
+            if (data.reply && typeof data.reply === 'string') {
+                appendMessage(data.reply, 'ai');
+            } else {
+                appendAiResponse(data);
+            }
 
         } catch (error) {
-            console.error('Network Error:', error);
+            console.error("Error:", error);
             hideTypingIndicator();
-            // 6. Handle network errors gracefully
-            appendMessage('⚠️ Oops! Unable to connect to the backend server. Please verify if your local API is running on localhost:5000.', 'ai', true);
+            // Network error handle karein
+            appendMessage('⚠️ Oops! Backend server se connect nahi ho pa raha hai. Kripya connection check karein.', 'ai', true);
         }
 
         scrollToBottom();
-    });
+    }
 
-    // Helper function to append regular text messages (User or simple Error/Text)
+    // Helper function to append regular text messages (User/AI)
     function appendMessage(text, sender, isError = false) {
         const messageDiv = document.createElement('div');
         messageDiv.classList.add('message', sender === 'user' ? 'user-message' : 'ai-message');
@@ -82,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
         chatHistory.appendChild(messageDiv);
     }
 
-    // Helper function to parse advanced backend payloads (Text + Optional SQL + Optional Table Results)
+    // Helper function for Text-to-SQL results / structured responses
     function appendAiResponse(data) {
         const messageDiv = document.createElement('div');
         messageDiv.classList.add('message', 'ai-message');
@@ -94,9 +105,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const contentDiv = document.createElement('div');
         contentDiv.classList.add('message-content');
 
-        // Response Text
         const textP = document.createElement('p');
-        textP.textContent = data.response_text || "Here are the results from your request:";
+        textP.textContent = data.response_text || data.reply || "Yeh lijiye aapke query ke results:";
         contentDiv.appendChild(textP);
 
         // Optional SQL Query Rendering
@@ -107,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
             contentDiv.appendChild(sqlBox);
         }
 
-        // Optional Database Results Table Rendering
+        // Optional Database Results Table
         if (data.results && Array.isArray(data.results) && data.results.length > 0) {
             const tableWrapper = document.createElement('div');
             tableWrapper.classList.add('results-table-wrapper');
@@ -115,7 +125,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const table = document.createElement('table');
             table.classList.add('results-table');
 
-            // Table Header Construction
             const headers = Object.keys(data.results[0]);
             const thead = document.createElement('thead');
             const headerRow = document.createElement('tr');
@@ -127,7 +136,6 @@ document.addEventListener('DOMContentLoaded', () => {
             thead.appendChild(headerRow);
             table.appendChild(thead);
 
-            // Table Body Construction
             const tbody = document.createElement('tbody');
             data.results.forEach(row => {
                 const tr = document.createElement('tr');
@@ -143,7 +151,6 @@ document.addEventListener('DOMContentLoaded', () => {
             contentDiv.appendChild(tableWrapper);
         }
 
-        // Timestamp
         const timestampSpan = document.createElement('span');
         timestampSpan.classList.add('timestamp');
         timestampSpan.textContent = getCurrentTime();
@@ -154,7 +161,6 @@ document.addEventListener('DOMContentLoaded', () => {
         chatHistory.appendChild(messageDiv);
     }
 
-    // Typing Indicator control functions
     function showTypingIndicator() {
         typingIndicator.classList.remove('typing-hidden');
         scrollToBottom();
@@ -164,18 +170,15 @@ document.addEventListener('DOMContentLoaded', () => {
         typingIndicator.classList.add('typing-hidden');
     }
 
-    // Auto-scroll handler
     function scrollToBottom() {
         chatHistory.scrollTop = chatHistory.scrollHeight;
     }
 
-    // Time generator helper
     function getCurrentTime() {
         const now = new Date();
         return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
 
-    // Basic HTML escaping utility for safe query displays
     function escapeHtml(text) {
         return text
             .replace(/&/g, "&amp;")
@@ -185,4 +188,3 @@ document.addEventListener('DOMContentLoaded', () => {
             .replace(/'/g, "&#039;");
     }
 });
-          
