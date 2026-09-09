@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatHistory = document.getElementById('chat-history');
     const typingIndicator = document.getElementById('typing-indicator');
 
-    // Aapka naya Replit API endpoint
+    // Aapka naya aur final Replit API endpoint
     const API_ENDPOINT = 'https://6122bce7-18de-4f2e-ab34-92f2081b32e6-00-c54akmfi8y9p.sisko.replit.dev/api/chat';
 
     // Handle form submission
@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
         await sendMessageToAI(messageText);
     });
 
-    // Aapka custom async function updated logic ke sath
+    // Async function to talk with Flask Backend
     async function sendMessageToAI(userMessage) {
         try {
             const response = await fetch(API_ENDPOINT, {
@@ -45,12 +45,15 @@ document.addEventListener('DOMContentLoaded', () => {
             // Typing indicator chupayein
             hideTypingIndicator();
 
-            // Agar backend se advanced data (SQL/Tables) aa raha ho toh use karein,
-            // warna aapke `data.reply` ko display karein.
-            if (data.reply && typeof data.reply === 'string') {
-                appendMessage(data.reply, 'ai');
-            } else {
+            // Check what kind of data came back
+            if (data.results && Array.isArray(data.results) && data.results.length > 0) {
+                // If it has database table results, use structured renderer
                 appendAiResponse(data);
+            } else if (data.response_text) {
+                // If it's a regular text response
+                appendMessage(data.response_text, 'ai');
+            } else if (data.reply) {
+                appendMessage(data.reply, 'ai');
             }
 
         } catch (error) {
@@ -106,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
         contentDiv.classList.add('message-content');
 
         const textP = document.createElement('p');
-        textP.textContent = data.response_text || data.reply || "Yeh lijiye aapke query ke results:";
+        textP.textContent = data.response_text || "Yeh lijiye aapke query ke results:";
         contentDiv.appendChild(textP);
 
         // Optional SQL Query Rendering
