@@ -3,77 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hotel AI Assistant & Text-to-SQL Engine</title>
-    <!-- Google Fonts & FontAwesome for icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Chat Buddy - AI Assistant & Text-to-SQL Engine</title>
+    <!-- Google Fonts & FontAwesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div class="chat-app-container">
-        <!-- Sidebar / Navigation Header -->
-        <aside class="sidebar">
-            <div class="brand">
-                <i class="fa-solid fa-hotel brand-icon"></i>
-                <h2>Hotel AI</h2>
+    <div class="app-container">
+        <!-- Sidebar: Chat History & App Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="brand">
+                    <div class="brand-logo"><i class="fa-solid fa-robot"></i></div>
+                    <h2>Chat Buddy</h2>
+                </div>
+                <button id="new-chat-btn" class="new-chat-btn" title="New Chat">
+                    <i class="fa-solid fa-plus"></i> New Chat
+                </button>
             </div>
-            <div class="sidebar-info">
-                <p class="subtitle">Text-to-SQL Engine</p>
-                <div class="status-badge">
-                    <span class="dot"></span> Connected
+
+            <div class="history-container">
+                <div class="history-label">Recent Conversations</div>
+                <div id="history-list" class="history-list">
+                    <!-- Dynamic History Items will populate here -->
                 </div>
             </div>
+
             <div class="sidebar-footer">
-                <p>&copy; 2026 Hospitality Systems</p>
+                <div class="status-indicator">
+                    <span class="pulse-dot"></span> 
+                    <span>AI Engine Connected</span>
+                </div>
             </div>
         </aside>
 
-        <!-- Main Chat Area -->
+        <!-- Main Chat Section -->
         <main class="chat-main">
-            <!-- Header -->
+            <!-- Top Glass Header -->
             <header class="chat-header">
-                <div class="header-title">
-                    <h1>🏨 Hotel AI Assistant</h1>
-                    <span class="header-desc">Ask about room availability, reservations, or run live database queries instantly.</span>
+                <div class="header-left">
+                    <button id="sidebar-toggle" class="icon-btn mobile-only" title="Toggle Sidebar">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <div class="header-title-box">
+                        <h1>💬 Chat Buddy Assistant</h1>
+                        <span class="header-subtitle">Your intelligent Text-to-SQL database companion</span>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <button id="clear-chat-btn" class="icon-btn" title="Clear Current Chat">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
                 </div>
             </header>
 
-            <!-- Chat History Container -->
+            <!-- Chat History Scrollable Container -->
             <div id="chat-history" class="chat-history">
-                <!-- Welcome Message -->
-                <div class="message ai-message">
-                    <div class="avatar ai-avatar">
-                        <i class="fa-solid fa-robot"></i>
-                    </div>
+                <!-- Welcome Message Container -->
+                <div class="message ai-message animate-fade-in">
+                    <div class="avatar ai-avatar"><i class="fa-solid fa-robot"></i></div>
                     <div class="message-content">
-                        <p>Hello! I'm your Hotel AI Assistant powered by Text-to-SQL. How can I help you manage bookings or search hotel data today?</p>
+                        <p>Hello! I am <strong>Chat Buddy</strong>. You can ask me anything or query your database, and I will generate live Text-to-SQL results for you!</p>
                         <span class="timestamp">Just now</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Typing Indicator (Hidden by default) -->
+            <!-- Animated Typing Indicator (Hidden by Default) -->
             <div id="typing-indicator" class="message ai-message typing-hidden">
-                <div class="avatar ai-avatar">
-                    <i class="fa-solid fa-robot"></i>
-                </div>
+                <div class="avatar ai-avatar"><i class="fa-solid fa-robot"></i></div>
                 <div class="message-content typing-bubble">
                     <div class="typing-dots">
-                        <span></span>
-                        <span></span>
-                        <span></span>
+                        <span></span><span></span><span></span>
                     </div>
                 </div>
             </div>
 
-            <!-- Fixed Bottom Input Bar -->
-            <div class="chat-input-container">
+            <!-- Fixed Glass Bottom Input Bar -->
+            <div class="chat-input-wrapper">
                 <form id="chat-form" class="chat-form">
                     <input 
                         type="text" 
                         id="user-input" 
-                        placeholder="Ask anything or search hotel rooms..." 
+                        placeholder="Ask Chat Buddy anything or query database..." 
                         autocomplete="off" 
                         required
                     />
@@ -81,7 +95,7 @@
                         <i class="fa-solid fa-paper-plane"></i>
                     </button>
                 </form>
-                <div class="input-footer-text">AI may generate SQL queries based on your natural language input.</div>
+                <div class="footer-disclaimer">Chat Buddy interacts dynamically with your backend database engine.</div>
             </div>
         </main>
     </div>
@@ -89,4 +103,3 @@
     <script src="script.js"></script>
 </body>
 </html>
-
